@@ -10,7 +10,7 @@
 ```jsx
 import Qmap from 'react-qqmap';
 
-export default () => <Qmap API_GL_KEY="VFCBZ-ZJGLJ-XS4F2-FC26Y-DD5XO-42BUP" />;
+export default () => <Qmap API_GL_KEY="YOURS_KEY" />;
 ```
 
 ```jsx
@@ -23,7 +23,7 @@ export default () => {
   return (
     <Qmap
       id="container"
-      API_GL_KEY="VFCBZ-ZJGLJ-XS4F2-FC26Y-DD5XO-42BUP"
+      API_GL_KEY="YOURS_KEY"
       onInit={(instance, constructor) => {
         QmapRef.current = {
           constructor,
