@@ -3,7 +3,17 @@
 [![NPM version](https://img.shields.io/npm/v/react-qqmap.svg?style=flat)](https://npmjs.org/package/react-qqmap)
 [![NPM downloads](http://img.shields.io/npm/dm/react-qqmap.svg?style=flat)](https://npmjs.org/package/react-qqmap)
 
-腾讯地图-React 组件
+腾讯地图 JavaScript API GL - React 组件
+
+React Version >= 17.02
+
+## Install
+
+```bash
+yarn add react-qqmap
+
+npm install react-qqmap
+```
 
 ## Usage
 
@@ -37,7 +47,14 @@ export default () => {
 
 ## Options
 
-TODO
+| 参数       | 类型                                                                    | 必填 | 默认值 | 说明                                                                                                                                                                                                                                                  |
+| ---------- | ----------------------------------------------------------------------- | ---- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| API_GL_KEY | string                                                                  | 是   | -      | 地图 api key [获取方式](https://lbs.qq.com/webApi/javascriptGL/glGuide/glBasic)                                                                                                                                                                       |
+| id         | string                                                                  | 否   | Qmap   | 地图 DOM 容器的 id                                                                                                                                                                                                                                    |
+| options    | Record<string, any>                                                     | 否   | -      | 地图参数，对象规范详见 [MapOptions](https://lbs.qq.com/webApi/javascriptGL/glDoc/docIndexMap#2) <br  /> 重写了 center?: { lat: number; lng: number; }; 默认坐标为天安门                                                                               |
+| onInit     | (args: { constructor: any; instance: any; markerLayer: any; }) => void; | 否   | -      | 地图初始化完成回调: <br  />constructor: [即 TMap](https://lbs.qq.com/webApi/javascriptGL/glDoc/glDocIndex)、<br  /> instance: 地图的实例、<br  /> markerLayer: [MultiMarker（点标记）](https://lbs.qq.com/webApi/javascriptGL/glGuide/glMarker)的实例 |
+
+[腾讯地图开发文档](https://lbs.qq.com/webApi/javascriptGL/glGuide/glBasic)
 
 ## Development
 

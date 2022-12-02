@@ -32,5 +32,9 @@ export type QmapProps = {
   id?: string;
   API_GL_KEY: string;
   options?: QmapOptions;
-  onInit?: (instance: any, constructor: any) => void;
+  onInit?: (args: {
+    constructor: any;
+    instance: any;
+    markerLayer: any;
+  }) => void;
 };

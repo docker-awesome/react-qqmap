@@ -14,8 +14,48 @@ function Qmap(props: QmapProps) {
     });
   }, []);
 
+  const loadMarker = useCallback(
+    ({ instance, LatLng }: { instance: any; LatLng: any }) => {
+      // 创建并初始化 MultiMarker
+      const markerLayer = new (window as any).TMap.MultiMarker({
+        // 指定地图容器
+        map: instance,
+        //样式定义
+        styles: {
+          //创建一个 styleId 为 "marker" 的样式（styles 的子属性名即为 styleId）
+          marker: new (window as any).TMap.MarkerStyle({
+            // 点标记样式宽度（像素）
+            width: 20,
+            // 点标记样式高度（像素）
+            height: 30,
+            // 焦点在图片中的像素位置，一般大头针类似形式的图片以针尖位置做为焦点，圆形点以圆心位置为焦点
+            anchor: { x: 10, y: 30 },
+          }),
+        },
+        //点标记数据数组
+        geometries: [
+          {
+            // 点标记唯一标识，后续如果有删除、修改位置等操作，都需要此 id
+            id: 'marker',
+            // 指定样式 id
+            styleId: 'marker',
+            // 点标记坐标位置
+            position: LatLng,
+            properties: {
+              // 自定义属性
+              title: 'marker',
+            },
+          },
+        ],
+      });
+
+      return markerLayer;
+    },
+    [],
+  );
+
   const loadQmap = useCallback(
-    (args: { domId: string; mapOptions?: QmapOptions }) => {
+    async (args: { domId: string; mapOptions?: QmapOptions }) => {
       const { domId, mapOptions } = args;
       const { center, ...rest } = mapOptions || {};
 
@@ -34,7 +74,12 @@ function Qmap(props: QmapProps) {
         },
       );
 
-      return instance;
+      const markerLayer = loadMarker({ instance, LatLng });
+
+      return {
+        instance,
+        markerLayer,
+      };
     },
     [],
   );
@@ -44,8 +89,11 @@ function Qmap(props: QmapProps) {
       if (!(window as any).TMap) {
         await loadScript(API_GL_KEY);
       }
-      loadQmap({ domId: id, mapOptions: options }).then((instance: any) => {
-        onInit?.(instance, (window as any).TMap);
+      loadQmap({ domId: id, mapOptions: options }).then((configs) => {
+        onInit?.({
+          ...configs,
+          constructor: (window as any).TMap,
+        });
       });
     })();
 
