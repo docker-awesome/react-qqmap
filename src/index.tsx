@@ -53,7 +53,7 @@ class Qmap {
       .join('&');
   };
 
-  static query = async (params: { address?: string; location?: string }) => {
+  static query = async (params: Record<string, any>) => {
     const { API_GL_KEY } = this.state;
     const url = `https://apis.map.qq.com/ws/geocoder/v1/?${this.getQuery({
       key: API_GL_KEY,
@@ -64,11 +64,24 @@ class Qmap {
     return fetchJsonp(url);
   };
 
-  static queryLocation = async (address: string) => {
+  static queryLocation = async ({ address }: { address: string }) => {
     return this.query({ address: encodeURIComponent(address) });
   };
 
-  static queryAddress = () => {};
+  static queryAddress = (args: {
+    location: {
+      lat: number;
+      lng: number;
+    };
+    get_poi?: 0 | 1;
+    poi_options?: string;
+  }) => {
+    const { location, ...rest } = args;
+    return this.query({
+      location: `${location.lat},${location.lng}`,
+      ...JSON.parse(JSON.stringify(rest)),
+    });
+  };
 
   static Component = (props: QmapProps) => {
     const { id = 'Qmap', API_GL_KEY, options = {}, onInit } = props;
@@ -194,6 +207,6 @@ class Qmap {
 export const queryLocation = Qmap.queryLocation;
 
 // 逆地址解析（坐标位置描述）
-// export const queryAddress = Qmap.queryLocation;
+export const queryAddress = Qmap.queryAddress;
 
 export default Qmap.Component;
