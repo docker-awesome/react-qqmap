@@ -64,11 +64,21 @@ class Qmap {
     return fetchJsonp(url);
   };
 
-  static queryLocation = async ({ address }: { address: string }) => {
-    return this.query({ address: encodeURIComponent(address) });
+  static queryLocation = async ({
+    key,
+    address,
+  }: {
+    key?: string;
+    address: string;
+  }) => {
+    return this.query({
+      key: key || this.state.API_GL_KEY,
+      address: encodeURIComponent(address),
+    });
   };
 
   static queryAddress = (args: {
+    key?: string;
     location: {
       lat: number;
       lng: number;
@@ -76,8 +86,9 @@ class Qmap {
     get_poi?: 0 | 1;
     poi_options?: string;
   }) => {
-    const { location, ...rest } = args;
+    const { key, location, ...rest } = args;
     return this.query({
+      key: key || this.state.API_GL_KEY,
       location: `${location.lat},${location.lng}`,
       ...JSON.parse(JSON.stringify(rest)),
     });
@@ -182,6 +193,7 @@ class Qmap {
         if (!(window as any).TMap) {
           await loadScript(API_GL_KEY);
         }
+        this.state.API_GL_KEY = API_GL_KEY;
         loadQmap({ domId: id, mapOptions: options }).then((configs) => {
           this.state = {
             ...this.state,

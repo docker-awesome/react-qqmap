@@ -69,10 +69,10 @@ import Qmap, { queryLocation } from 'react-qqmap';
 
 export default () => {
   useEffect(() => {
-    // queryLocation: ({ address: string; }) => Promise<any>;
-    // 请求参数: address 同 参考文档-请求参数-address (queryLocation 方法内已对 address 进行 encodeURIComponent URL编码)
-    // 不支持传入 key、output、callback 等参数
-    // key 使用的是 Qmap 传入的 API_GL_KEY
+    // queryLocation: ({ key?: string; address: string; }) => Promise<any>;
+    // 请求参数: key、address 同 参考文档-请求参数 - key、address (queryLocation 方法内已对 address 进行 encodeURIComponent URL编码)
+    // 不支持传入 output、callback 等参数
+    // key 不传则使用的是 Qmap 传入的 API_GL_KEY
     // output 使用的是 JSONP
     queryLocation({ address: '北京市北京市东城区天安门' }).then((res) => {
       // 响应结果: res 同 参考文档-响应结果
@@ -92,6 +92,7 @@ import Qmap, { queryAddress } from 'react-qqmap';
 export default () => {
   useEffect(() => {
     /* queryAddress: ({
+        key?: string;
         location: {
           lat: number;
           lng: number;
@@ -99,9 +100,9 @@ export default () => {
         get_poi?: 0 | 1;
         poi_options?: string;
       }) => Promise<any>; */
-    // 请求参数: get_poi、poi_options 同 参考文档-请求参数-get_poi、poi_options
-    // 不支持传入 key、output、callback 等参数
-    // key 使用的是 Qmap 传入的 API_GL_KEY
+    // 请求参数: key、get_poi、poi_options 同 参考文档-请求参数 - key、get_poi、poi_options
+    // 不支持传入 output、callback 等参数
+    // key 不传则使用的是 Qmap 传入的 API_GL_KEY
     // output 使用的是 JSONP
     queryAddress({
       location: {
