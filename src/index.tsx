@@ -65,7 +65,7 @@ class Qmap {
   };
 
   static queryLocation = async (address: string) => {
-    return this.query({ address });
+    return this.query({ address: encodeURIComponent(address) });
   };
 
   static queryAddress = () => {};

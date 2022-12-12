@@ -17,14 +17,18 @@ npm install react-qqmap
 
 ## Usage
 
+> 基础示例
+
 ```jsx
 import Qmap from 'react-qqmap';
 
 export default () => <Qmap API_GL_KEY="YOURS_KEY" />;
 ```
 
+> 初始化回调-获取地图实例
+
 ```jsx
-import { useRef, useEffect } from 'react';
+import { useRef } from 'react';
 import Qmap from 'react-qqmap';
 
 export default () => {
@@ -43,6 +47,25 @@ export default () => {
       }}
     />
   );
+};
+```
+
+> 地址解析（地址转换坐标）[参考文档](https://lbs.qq.com/service/webService/webServiceGuide/webServiceGeocoder)
+
+```jsx
+import { useEffect } from 'react';
+import Qmap, { queryLocation } from 'react-qqmap';
+
+export default () => {
+  useEffect(() => {
+    // queryLocation: (address: string) => Promise<any>
+    // 请求参数: address 同 参考文档-请求参数-address (queryLocation 方法内已对 address 进行 encodeURIComponent URL编码)
+    queryLocation('北京市北京市东城区天安门').then((res) => {
+      // 响应结果: res 同 参考文档-响应结果
+      console.log(res);
+    });
+  }, []);
+  return <Qmap API_GL_KEY="YOURS_KEY" />;
 };
 ```
 
