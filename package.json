@@ -2,6 +2,11 @@
   "name": "react-qqmap",
   "version": "0.0.4",
   "description": "腾讯地图-React组件",
+  "keywords": [
+    "react",
+    "map",
+    "react-qqmap"
+  ],
   "license": "MIT",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
