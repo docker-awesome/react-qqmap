@@ -1,6 +1,6 @@
 {
   "name": "react-qqmap",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "腾讯地图-React组件",
   "license": "MIT",
   "module": "dist/index.js",
@@ -17,6 +17,7 @@
     "lint": "npm run lint:es && npm run lint:css",
     "lint:css": "stylelint \"{src,test}/**/*.{css,less}\"",
     "lint:es": "eslint \"{src,test}/**/*.{js,jsx,ts,tsx}\"",
+    "package": "yarn --registry=https://registry.npmmirror.com",
     "prepare": "husky install && dumi setup",
     "prepublishOnly": "father doctor && npm run build",
     "start": "npm run dev"

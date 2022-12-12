@@ -19,10 +19,11 @@ export default () => {
     <Qmap
       id="container"
       API_GL_KEY="VFCBZ-ZJGLJ-XS4F2-FC26Y-DD5XO-42BUP"
-      onInit={(instance, constructor) => {
+      onInit={({ constructor, instance, marker }) => {
         QmapRef.current = {
           constructor,
           instance,
+          marker,
         };
       }}
     />
