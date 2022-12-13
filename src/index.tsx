@@ -35,7 +35,7 @@ type QmapProps = {
   id?: string;
   API_GL_KEY: string;
   options?: QmapOptions;
-  onInit?: (args: { constructor: any; instance: any; marker: any }) => void;
+  onInit?: (args: { constructor: any; instance: any }) => void;
 };
 
 class Qmap {
@@ -97,10 +97,9 @@ class Qmap {
   static Component = (props: QmapProps) => {
     const { id = 'Qmap', API_GL_KEY, options = {}, onInit } = props;
 
-    const QmapRef = useRef<{ constructor: any; instance: any; marker: any }>({
+    const QmapRef = useRef<{ constructor: any; instance: any }>({
       constructor: (window as any).TMap,
       instance: null,
-      marker: null,
     });
 
     const getLatLng = useCallback((center: QmapOptions['center']) => {
@@ -113,46 +112,6 @@ class Qmap {
       return LatLng;
     }, []);
 
-    const getMarker = useCallback(
-      ({ instance, LatLng }: { instance: any; LatLng: any }) => {
-        // 创建并初始化 MultiMarker
-        const markerLayer = new (window as any).TMap.MultiMarker({
-          // 指定地图容器
-          map: instance,
-          // 样式定义
-          styles: {
-            // 创建一个 styleId 为 "marker" 的样式（styles 的子属性名即为 styleId）
-            marker: new (window as any).TMap.MarkerStyle({
-              // 点标记样式宽度（像素）
-              width: 20,
-              // 点标记样式高度（像素）
-              height: 30,
-              // 焦点在图片中的像素位置，一般大头针类似形式的图片以针尖位置做为焦点，圆形点以圆心位置为焦点
-              anchor: { x: 10, y: 30 },
-            }),
-          },
-          // 点标记数据数组
-          geometries: [
-            {
-              // 点标记唯一标识，后续如果有删除、修改位置等操作，都需要此 id
-              id: 'marker',
-              // 指定样式 id
-              styleId: 'marker',
-              // 点标记坐标位置
-              position: LatLng,
-              properties: {
-                // 自定义属性
-                title: 'marker',
-              },
-            },
-          ],
-        });
-
-        return markerLayer;
-      },
-      [],
-    );
-
     const getInstance = useCallback((domId: string, args: QmapOptions) => {
       // 调用 TMap.Map() 构造函数创建地图
       const instance = new (window as any).TMap.Map(
@@ -163,6 +122,16 @@ class Qmap {
     }, []);
 
     const updateControlPosition = useCallback(() => {
+      // 设置 旋转 控件位置
+      QmapRef.current.instance
+        .getControl(
+          QmapRef.current.constructor.constants.DEFAULT_CONTROL_ID.ROTATION,
+        )
+        .setPosition(
+          QmapRef.current.constructor.constants.CONTROL_POSITION.TOP_RIGHT,
+        );
+
+      // 设置 缩放 控件位置
       QmapRef.current.instance
         .getControl(
           QmapRef.current.constructor.constants.DEFAULT_CONTROL_ID.ZOOM,
@@ -195,11 +164,8 @@ class Qmap {
           ...rest,
         });
 
-        const marker = getMarker({ instance, LatLng });
-
         return {
           instance,
-          marker,
         };
       },
       [],

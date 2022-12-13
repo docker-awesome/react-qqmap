@@ -7,6 +7,8 @@
 
 React Version >= 17.02
 
+<br />
+
 ## Install
 
 ```bash
@@ -15,29 +17,22 @@ yarn add react-qqmap
 npm install react-qqmap
 ```
 
+<br />
+
 ## Options
 
-| 参数       | 类型                                                                                    | 必填 | 默认值 | 说明                                                                                                                                                                                                                                             |
-| ---------- | --------------------------------------------------------------------------------------- | ---- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| API_GL_KEY | string                                                                                  | 是   | -      | 地图 api key 开发密钥 [获取方式](https://lbs.qq.com/webApi/javascriptGL/glGuide/glBasic)                                                                                                                                                         |
-| id         | string                                                                                  | 否   | Qmap   | 地图 DOM 容器的 id                                                                                                                                                                                                                               |
-| options    | Record<string, any>                                                                     | 否   | -      | 地图参数，对象规范详见 [MapOptions](https://lbs.qq.com/webApi/javascriptGL/glDoc/docIndexMap#2) <br  /> 重写 center?: { lat: number; lng: number; }; 默认坐标为天安门                                                                            |
-| onInit     | (args: { <br  />constructor: any; <br  />instance: any; <br  />marker: any; }) => void; | 否   | -      | 地图初始化完成回调: <br  />constructor: [即 TMap](https://lbs.qq.com/webApi/javascriptGL/glDoc/glDocIndex)、<br  /> instance: 地图的实例、<br  /> marker: [MultiMarker（点标记）](https://lbs.qq.com/webApi/javascriptGL/glGuide/glMarker)的实例 |
+| 参数       | 类型                                                                | 必填 | 默认值 | 说明                                                                                                                                                                  |
+| ---------- | ------------------------------------------------------------------- | ---- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| API_GL_KEY | string                                                              | 是   | -      | 地图 api key 开发密钥 [获取方式](https://lbs.qq.com/webApi/javascriptGL/glGuide/glBasic)                                                                              |
+| id         | string                                                              | 否   | Qmap   | 地图 DOM 容器的 id                                                                                                                                                    |
+| options    | Record<string, any>                                                 | 否   | -      | 地图参数，对象规范详见 [MapOptions](https://lbs.qq.com/webApi/javascriptGL/glDoc/docIndexMap#2) <br  /> 重写 center?: { lat: number; lng: number; }; 默认坐标为天安门 |
+| onInit     | (args: { <br  />constructor: any; <br  />instance: any; }) => void; | 否   | -      | 地图初始化完成回调: <br  />constructor: [即 TMap](https://lbs.qq.com/webApi/javascriptGL/glDoc/glDocIndex)、<br  /> instance: 地图的实例、<br  />                     |
 
-```text
-注：
+<br />
 
-默认中心点标注的 MultiMarkerOptions['geometries'] 默认配置:
-{
-    id: 'marker',
-    styleId: 'marker'
-}
+### 更多 API 使用方法请参考 [腾讯地图开发文档](https://lbs.qq.com/webApi/javascriptGL/glDoc/glDocIndex)
 
-若不需要默认中心点标注，可以使用 id 进行删除，
-若需要自定义点标注样式，可以使用 styleId 进行更新
-```
-
-更多 API 使用方法请参考 [腾讯地图开发文档](https://lbs.qq.com/webApi/javascriptGL/glDoc/glDocIndex)
+<br />
 
 ## Usage
 
@@ -48,6 +43,8 @@ import Qmap from 'react-qqmap';
 
 export default () => <Qmap API_GL_KEY="YOURS_KEY" />;
 ```
+
+<br />
 
 > 初始化回调-获取地图实例
 
@@ -62,17 +59,101 @@ export default () => {
     <Qmap
       id="container"
       API_GL_KEY="YOURS_KEY"
-      onInit={({ constructor, instance, marker }) => {
+      onInit={({ constructor, instance }) => {
         QmapRef.current = {
           constructor,
           instance,
-          marker,
         };
       }}
     />
   );
 };
 ```
+
+<br />
+
+> 点标记
+
+```jsx
+import { useRef, useCallback } from 'react';
+import Qmap from 'react-qqmap';
+
+export default () => {
+  const QmapRef = useRef();
+
+  const getLatLng = useCallback((location) => {
+    // 定义地图中心点坐标（默认坐标为天安门）
+    const LatLng = new QmapRef.current.constructor.LatLng(
+      location?.lat || 39.908802,
+      location?.lng || 116.397502,
+    );
+
+    return LatLng;
+  }, []);
+
+  const getMarkerStyle = useCallback((options = {}) => {
+    const markerStyle = new QmapRef.current.constructor.MarkerStyle({
+      // 点标记样式宽度（像素）
+      width: 20,
+      // 点标记样式高度（像素）
+      height: 30,
+      // 焦点在图片中的像素位置，一般大头针类似形式的图片以针尖位置做为焦点，圆形点以圆心位置为焦点
+      anchor: { x: 10, y: 30 },
+      ...options,
+    });
+    return markerStyle;
+  }, []);
+
+  const getMarker = useCallback((location) => {
+    // 创建并初始化 MultiMarker
+    const markerLayer = new QmapRef.current.constructor.MultiMarker({
+      // 指定地图容器
+      map: QmapRef.current.instance,
+      // 样式定义
+      styles: {
+        // 创建一个 styleId 为 "marker" 的样式（styles 的子属性名即为 styleId）
+        marker: getMarkerStyle(),
+      },
+      // 点标记数据数组
+      geometries: [
+        {
+          // 点标记唯一标识，后续如果有删除、修改位置等操作，都需要此 id
+          id: 'marker',
+          // 指定样式 id
+          styleId: 'marker',
+          // 点标记坐标位置
+          position: getLatLng(location),
+          properties: {
+            // 自定义属性
+            title: 'marker',
+          },
+        },
+      ],
+    });
+
+    return markerLayer;
+  }, []);
+
+  return (
+    <Qmap
+      id="container"
+      API_GL_KEY="YOURS_KEY"
+      onInit={({ constructor, instance, marker }) => {
+        QmapRef.current = {
+          constructor,
+          instance,
+        };
+
+        const marker = getMarker();
+
+        QmapRef.current.marker = marker;
+      }}
+    />
+  );
+};
+```
+
+<br />
 
 > 地址解析（地址转换坐标）[参考文档](https://lbs.qq.com/service/webService/webServiceGuide/webServiceGeocoder)
 
@@ -100,6 +181,8 @@ export default () => {
   return <Qmap API_GL_KEY="YOURS_KEY" />;
 };
 ```
+
+<br />
 
 > 逆地址解析（坐标位置描述）[参考文档](https://lbs.qq.com/service/webService/webServiceGuide/webServiceGcoder)
 
@@ -135,6 +218,8 @@ export default () => {
 };
 ```
 
+<br />
+
 ## Development
 
 ```bash
@@ -156,6 +241,8 @@ $ yarn run docs:build
 # check your project for potential problems
 $ yarn run doctor
 ```
+
+<br />
 
 ## LICENSE
 
