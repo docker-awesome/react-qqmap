@@ -24,6 +24,19 @@ npm install react-qqmap
 | options    | Record<string, any>                                                                     | 否   | -      | 地图参数，对象规范详见 [MapOptions](https://lbs.qq.com/webApi/javascriptGL/glDoc/docIndexMap#2) <br  /> 重写 center?: { lat: number; lng: number; }; 默认坐标为天安门                                                                            |
 | onInit     | (args: { <br  />constructor: any; <br  />instance: any; <br  />marker: any; }) => void; | 否   | -      | 地图初始化完成回调: <br  />constructor: [即 TMap](https://lbs.qq.com/webApi/javascriptGL/glDoc/glDocIndex)、<br  /> instance: 地图的实例、<br  /> marker: [MultiMarker（点标记）](https://lbs.qq.com/webApi/javascriptGL/glGuide/glMarker)的实例 |
 
+```text
+注：
+
+默认中心点标注的 MultiMarkerOptions['geometries'] 默认配置:
+{
+    id: 'marker',
+    styleId: 'marker'
+}
+
+若不需要默认中心点标注，可以使用 id 进行删除，
+若需要自定义点标注样式，可以使用 styleId 进行更新
+```
+
 更多 API 使用方法请参考 [腾讯地图开发文档](https://lbs.qq.com/webApi/javascriptGL/glDoc/glDocIndex)
 
 ## Usage

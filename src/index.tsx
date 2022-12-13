@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import fetchJsonp from './fetch-jsonp';
 
 type QmapOptions = {
@@ -44,7 +44,7 @@ class Qmap {
     API_GL_KEY: null,
   };
 
-  static getQuery = (params: Record<string, any>) => {
+  static getQueryString = (params: Record<string, any>) => {
     return Object.entries(params)
       .map((item) => {
         const [key, value] = item;
@@ -55,7 +55,7 @@ class Qmap {
 
   static query = async (params: Record<string, any>) => {
     const { API_GL_KEY } = this.state;
-    const url = `https://apis.map.qq.com/ws/geocoder/v1/?${this.getQuery({
+    const url = `https://apis.map.qq.com/ws/geocoder/v1/?${this.getQueryString({
       key: API_GL_KEY,
       output: 'jsonp',
       ...params,
@@ -97,6 +97,22 @@ class Qmap {
   static Component = (props: QmapProps) => {
     const { id = 'Qmap', API_GL_KEY, options = {}, onInit } = props;
 
+    const QmapRef = useRef<{ constructor: any; instance: any; marker: any }>({
+      constructor: (window as any).TMap,
+      instance: null,
+      marker: null,
+    });
+
+    const getLatLng = useCallback((center: QmapOptions['center']) => {
+      // 定义地图中心点坐标（默认坐标为天安门）
+      const LatLng = new (window as any).TMap.LatLng(
+        center?.lat || 39.908802,
+        center?.lng || 116.397502,
+      );
+
+      return LatLng;
+    }, []);
+
     const getMarker = useCallback(
       ({ instance, LatLng }: { instance: any; LatLng: any }) => {
         // 创建并初始化 MultiMarker
@@ -137,16 +153,6 @@ class Qmap {
       [],
     );
 
-    const getLatLng = useCallback((center: QmapOptions['center']) => {
-      // 定义地图中心点坐标（默认坐标为天安门）
-      const LatLng = new (window as any).TMap.LatLng(
-        center?.lat || 39.908802,
-        center?.lng || 116.397502,
-      );
-
-      return LatLng;
-    }, []);
-
     const getInstance = useCallback((domId: string, args: QmapOptions) => {
       // 调用 TMap.Map() 构造函数创建地图
       const instance = new (window as any).TMap.Map(
@@ -156,13 +162,24 @@ class Qmap {
       return instance;
     }, []);
 
+    const updateControlPosition = useCallback(() => {
+      QmapRef.current.instance
+        .getControl(
+          QmapRef.current.constructor.constants.DEFAULT_CONTROL_ID.ZOOM,
+        )
+        .setPosition(
+          QmapRef.current.constructor.constants.CONTROL_POSITION.BOTTOM_RIGHT,
+        );
+    }, []);
+
     const loadScript = useCallback((apiKey: string) => {
-      return new Promise((resolve) => {
+      return new Promise((resolve, reject) => {
         const script = document.createElement('script');
         script.type = 'text/javascript';
         script.src = `https://map.qq.com/api/gljs?v=1.exp&key=${apiKey}`;
         script.onload = resolve;
-        document.body.appendChild(script);
+        script.onerror = reject;
+        document.head.appendChild(script);
       });
     }, []);
 
@@ -190,22 +207,30 @@ class Qmap {
 
     useEffect(() => {
       (async () => {
-        if (!(window as any).TMap) {
-          await loadScript(API_GL_KEY);
-        }
         this.state.API_GL_KEY = API_GL_KEY;
-        loadQmap({ domId: id, mapOptions: options }).then((configs) => {
-          this.state = {
-            ...this.state,
-            API_GL_KEY,
-            constructor: (window as any).TMap,
-            ...configs,
-          };
-          onInit?.({
-            ...configs,
-            constructor: (window as any).TMap,
+        if (!(window as any).TMap) {
+          await loadScript(API_GL_KEY).catch((error) => {
+            console.error(error);
           });
-        });
+        }
+        if ((window as any).TMap) {
+          loadQmap({ domId: id, mapOptions: options })
+            .then((res) => {
+              this.state = {
+                ...this.state,
+                constructor: (window as any).TMap,
+              };
+              QmapRef.current = {
+                constructor: (window as any).TMap,
+                ...res,
+              };
+              updateControlPosition();
+              onInit?.(QmapRef.current);
+            })
+            .catch((error) => {
+              console.error(error);
+            });
+        }
       })();
 
       return () => {};
