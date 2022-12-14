@@ -31,11 +31,27 @@ type QmapOptions = {
   clip?: Record<string, any>;
 };
 
+type QmapMarkerOptions = {
+  id?: string;
+  zIndex?: number;
+  styles?: Record<string, any>;
+  enableCollision?: boolean;
+  geometries?: {
+    id?: string;
+    styleId?: string;
+    position?: any;
+    rank?: number;
+    properties?: Record<string, any>;
+    content?: string;
+  }[];
+};
+
 type QmapProps = {
   id?: string;
   API_GL_KEY: string;
   options?: QmapOptions;
-  onInit?: (args: { constructor: any; instance: any }) => void;
+  markerOptions?: QmapMarkerOptions;
+  onInit?: (args: { constructor: any; instance: any; marker: any }) => void;
 };
 
 class Qmap {
@@ -95,11 +111,18 @@ class Qmap {
   };
 
   static Component = (props: QmapProps) => {
-    const { id = 'Qmap', API_GL_KEY, options = {}, onInit } = props;
+    const {
+      id = 'Qmap',
+      API_GL_KEY,
+      options = {},
+      markerOptions,
+      onInit,
+    } = props;
 
-    const QmapRef = useRef<{ constructor: any; instance: any }>({
+    const QmapRef = useRef<{ constructor: any; instance: any; marker: any }>({
       constructor: (window as any).TMap,
       instance: null,
+      marker: null,
     });
 
     const getLatLng = useCallback((center: QmapOptions['center']) => {
@@ -110,6 +133,33 @@ class Qmap {
       );
 
       return LatLng;
+    }, []);
+
+    const getMarker = useCallback(({ instance }: { instance: any }) => {
+      const { styles = {}, ...rest } = markerOptions || {};
+      // 创建并初始化 MultiMarker
+      const markerLayer = new (window as any).TMap.MultiMarker({
+        // 样式定义
+        styles: {
+          // 创建一个 styleId 为 "marker" 的样式（styles 的子属性名即为 styleId）
+          marker: new (window as any).TMap.MarkerStyle({
+            // 点标记样式宽度（像素）
+            width: 20,
+            // 点标记样式高度（像素）
+            height: 30,
+            // 焦点在图片中的像素位置，一般大头针类似形式的图片以针尖位置做为焦点，圆形点以圆心位置为焦点
+            anchor: { x: 10, y: 30 },
+          }),
+          ...styles,
+        },
+        // 点标记数据数组
+        geometries: [],
+        ...rest,
+        // 指定地图容器
+        map: instance,
+      });
+
+      return markerLayer;
     }, []);
 
     const getInstance = useCallback((domId: string, args: QmapOptions) => {
@@ -164,8 +214,11 @@ class Qmap {
           ...rest,
         });
 
+        const marker = getMarker({ instance });
+
         return {
           instance,
+          marker,
         };
       },
       [],
