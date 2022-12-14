@@ -9,7 +9,25 @@ React Version >= 17.02
 
 <br />
 
-## Install
+## Guide
+
+[安装](#install)
+
+[组件参数](#options)
+
+[基础示例](#basic)
+
+[获取地图实例](#instance)
+
+[点标记](#marker)
+
+[地址解析（地址转换坐标）](#a2l)
+
+[逆地址解析（坐标位置描述）](#l2a)
+
+<br />
+
+## <span id='install'>Install</span>
 
 ```bash
 yarn add react-qqmap
@@ -19,7 +37,7 @@ npm install react-qqmap
 
 <br />
 
-## Options
+## <span id='options'>Options</span>
 
 | 参数          | 类型                                                                                                          | 必填 | 默认值 | 说明                                                                                                                                                                                                                                                            |
 | ------------- | ------------------------------------------------------------------------------------------------------------- | ---- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -69,7 +87,7 @@ marker.add([{
 
 ## Usage
 
-> 基础示例
+> <span id='basic'>基础示例</span>
 
 ```jsx
 import Qmap from 'react-qqmap';
@@ -79,7 +97,7 @@ export default () => <Qmap API_GL_KEY="YOURS_KEY" />;
 
 <br />
 
-> 初始化回调-获取地图实例
+> <span id='instance'>初始化回调-获取地图实例</span>
 
 ```jsx
 import { useRef } from 'react';
@@ -94,9 +112,9 @@ export default () => {
       API_GL_KEY="YOURS_KEY"
       onInit={({ constructor, instance, marker }) => {
         QmapRef.current = {
-          constructor,
-          instance,
-          marker,
+          constructor, // 即 TMap
+          instance, // 地图实例
+          marker, // 点标记实例
         };
       }}
     />
@@ -106,7 +124,7 @@ export default () => {
 
 <br />
 
-> 点标记
+> <span id='marker'>点标记</span>
 
 ```jsx
 import { useRef, useCallback } from 'react';
@@ -164,7 +182,7 @@ export default () => {
 
 <br />
 
-> 地址解析（地址转换坐标）[参考文档](https://lbs.qq.com/service/webService/webServiceGuide/webServiceGeocoder)
+> <span id='a2l'>地址解析（地址转换坐标）</span>[参考文档](https://lbs.qq.com/service/webService/webServiceGuide/webServiceGeocoder)
 
 | 参数    | 类型   | 必填 | 默认值                 | 说明         |
 | ------- | ------ | ---- | ---------------------- | ------------ |
@@ -193,7 +211,7 @@ export default () => {
 
 <br />
 
-> 逆地址解析（坐标位置描述）[参考文档](https://lbs.qq.com/service/webService/webServiceGuide/webServiceGcoder)
+> <span id='l2a'>逆地址解析（坐标位置描述）</span>[参考文档](https://lbs.qq.com/service/webService/webServiceGuide/webServiceGcoder)
 
 | 参数        | 类型                          | 必填 | 默认值                 | 说明                        |
 | ----------- | ----------------------------- | ---- | ---------------------- | --------------------------- |
