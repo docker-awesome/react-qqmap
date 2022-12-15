@@ -25,6 +25,8 @@ React Version >= 17.02
 
 [逆地址解析（坐标位置描述）](#l2a)
 
+[提示](#warning)
+
 <br />
 
 ## <span id='install'>Install</span>
@@ -246,6 +248,21 @@ export default () => {
 ```
 
 <br />
+
+## <span id='warning'>提示</span>
+
+<br />
+
+控件-[旋转控件](https://lbs.qq.com/webApi/javascriptGL/glDoc/glDocControl)
+
+```css
+/* 样式类名：rotate-circle */
+
+.rotate-circle {
+  /* 此样式为地图默认样式，可能会被项目写的全局样式覆盖为 border-box, 导致旋转控件位置偏移，只需重写回 content-box 即可修复 */
+  box-sizing: content-box;
+}
+```
 
 ## Development
 

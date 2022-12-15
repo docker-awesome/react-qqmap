@@ -171,26 +171,6 @@ class Qmap {
       return instance;
     }, []);
 
-    const updateControlPosition = useCallback(() => {
-      // 设置 旋转 控件位置
-      QmapRef.current.instance
-        .getControl(
-          QmapRef.current.constructor.constants.DEFAULT_CONTROL_ID.ROTATION,
-        )
-        .setPosition(
-          QmapRef.current.constructor.constants.CONTROL_POSITION.TOP_RIGHT,
-        );
-
-      // 设置 缩放 控件位置
-      QmapRef.current.instance
-        .getControl(
-          QmapRef.current.constructor.constants.DEFAULT_CONTROL_ID.ZOOM,
-        )
-        .setPosition(
-          QmapRef.current.constructor.constants.CONTROL_POSITION.BOTTOM_RIGHT,
-        );
-    }, []);
-
     const loadScript = useCallback((apiKey: string) => {
       return new Promise((resolve, reject) => {
         const script = document.createElement('script');
@@ -243,7 +223,6 @@ class Qmap {
                 constructor: (window as any).TMap,
                 ...res,
               };
-              updateControlPosition();
               onInit?.(QmapRef.current);
             })
             .catch((error) => {
