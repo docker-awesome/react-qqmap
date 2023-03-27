@@ -60,24 +60,16 @@ class Qmap {
     API_GL_KEY: null,
   };
 
-  static getQueryString = (params: Record<string, any>) => {
-    return Object.entries(params)
-      .map((item) => {
-        const [key, value] = item;
-        return `${key}=${value}`;
-      })
-      .join('&');
-  };
-
   static query = async (params: Record<string, any>) => {
     const { API_GL_KEY } = this.state;
-    const url = `https://apis.map.qq.com/ws/geocoder/v1/?${this.getQueryString({
+
+    const query = new URLSearchParams({
       key: API_GL_KEY,
       output: 'jsonp',
       ...params,
-    })}`;
+    }).toString();
 
-    return fetchJsonp(url);
+    return fetchJsonp(`https://apis.map.qq.com/ws/geocoder/v1/?${query}`);
   };
 
   static queryLocation = async ({
