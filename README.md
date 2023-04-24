@@ -1,13 +1,6 @@
-# react-qqmap
+# 腾讯地图 JavaScript API GL - React 组件
 
-[![NPM version](https://img.shields.io/npm/v/react-qqmap.svg?style=flat)](https://npmjs.org/package/react-qqmap)
-[![NPM downloads](http://img.shields.io/npm/dm/react-qqmap.svg?style=flat)](https://npmjs.org/package/react-qqmap)
-
-腾讯地图 JavaScript API GL - React 组件
-
-React Version >= 17.02
-
-<br />
+[![NPM version](https://img.shields.io/npm/v/react-qqmap.svg?style=flat)](https://npmjs.org/package/react-qqmap) [![NPM downloads](http://img.shields.io/npm/dm/react-qqmap.svg?style=flat)](https://npmjs.org/package/react-qqmap)
 
 ## Guide
 
@@ -29,7 +22,7 @@ React Version >= 17.02
 
 <br />
 
-## <span id='install'>Install</span>
+## <span id='install'>安装</span> `React Version >= 17.02`
 
 ```bash
 yarn add react-qqmap
@@ -39,7 +32,7 @@ npm install react-qqmap
 
 <br />
 
-## <span id='options'>Options</span>
+## <span id='options'>组件参数</span>
 
 | 参数          | 类型                                                                                                          | 必填 | 默认值 | 说明                                                                                                                                                                                                                                                            |
 | ------------- | ------------------------------------------------------------------------------------------------------------- | ---- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -197,12 +190,15 @@ import Qmap, { queryLocation } from 'react-qqmap';
 
 export default () => {
   useEffect(() => {
-    // queryLocation: ({ key?: string; address: string; }) => Promise<any>;
+    // queryLocation: ({ key: string; address: string; }) => Promise<any>;
     // 请求参数: key、address 同 参考文档-请求参数 - key、address (queryLocation 方法内已对 address 进行 encodeURIComponent URL编码)
     // 不支持传入 output、callback 等参数
-    // key 不传则使用的是 Qmap 传入的 API_GL_KEY
+    // key 即地图的 API_GL_KEY
     // output 使用的是 JSONP
-    queryLocation({ address: '北京市北京市东城区天安门' }).then((res) => {
+    queryLocation({
+      key: 'YOURS_KEY',
+      address: '北京市北京市东城区天安门',
+    }).then((res) => {
       // 响应结果: res 同 参考文档-响应结果
       console.log(res);
     });
@@ -215,12 +211,12 @@ export default () => {
 
 > <span id='l2a'>逆地址解析（坐标位置描述）</span>[参考文档](https://lbs.qq.com/service/webService/webServiceGuide/webServiceGcoder)
 
-| 参数        | 类型                          | 必填 | 默认值                 | 说明                        |
-| ----------- | ----------------------------- | ---- | ---------------------- | --------------------------- |
-| key         | string                        | 否   | Qmap 传入的 API_GL_KEY | 开发密钥                    |
-| location    | { lat: number; lng: number; } | 是   | -                      | 经纬度坐标位置              |
-| get_poi     | 0 \| 1                        | 否   | 0                      | 是否返回周边地点（POI）列表 |
-| poi_options | string                        | 否   | -                      | 周边 POI 列表控制参数       |
+| 参数        | 类型                          | 必填 | 默认值 | 说明                        |
+| ----------- | ----------------------------- | ---- | ------ | --------------------------- |
+| key         | string                        | 是   | -      | 开发密钥                    |
+| location    | { lat: number; lng: number; } | 是   | -      | 经纬度坐标位置              |
+| get_poi     | 0 \| 1                        | 否   | 0      | 是否返回周边地点（POI）列表 |
+| poi_options | string                        | 否   | -      | 周边 POI 列表控制参数       |
 
 ```jsx
 import { useEffect } from 'react';
@@ -228,12 +224,13 @@ import Qmap, { queryAddress } from 'react-qqmap';
 
 export default () => {
   useEffect(() => {
-    // queryAddress: ({ key?: string; location: { lat: number; lng: number; }; get_poi?: 0 | 1; poi_options?: string; }) => Promise<any>;
+    // queryAddress: ({ key: string; location: { lat: number; lng: number; }; get_poi?: 0 | 1; poi_options?: string; }) => Promise<any>;
     // 请求参数: key、get_poi、poi_options 同 参考文档-请求参数 - key、get_poi、poi_options
     // 不支持传入 output、callback 等参数
-    // key 不传则使用的是 Qmap 传入的 API_GL_KEY
+    // key 即地图的 API_GL_KEY
     // output 使用的是 JSONP
     queryAddress({
+      key: 'YOURS_KEY',
       location: {
         lat: 39.908802,
         lng: 116.397502,
