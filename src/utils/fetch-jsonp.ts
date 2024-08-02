@@ -1,44 +1,30 @@
-class FetchJsonp {
-  static state: Record<string, any> = {
-    prefix: {
-      id: 'QmapFetchJsonpScript',
-      callback: 'QmapFetchJsonpCallback',
-    },
-  };
+const fetcher = async (src) => {
+  return new Promise((resolve, reject) => {
+    let i = 0;
+    while (window[`__JSONP_CALLBACK_${i}__`]) i++;
 
-  static add = async (src: string) => {
-    return new Promise((resolve, reject) => {
-      const { prefix } = this.state;
-      const current = Date.now();
-      const id = `${prefix.id}_${current}`;
-      const callback = `${prefix.callback}_${current}`;
-      const script = document.createElement('script');
-      script.type = 'text/javascript';
-      script.src = `${src}&callback=${callback}`;
-      script.id = id;
-      script.onerror = (error) => {
-        this.remove({ id, callback });
-        reject(error);
-      };
-      (window as any)[callback] = (res: any) => {
-        this.remove({ id, callback });
-        resolve(res);
-      };
-      document.head.appendChild(script);
-    });
-  };
+    const callback = `__JSONP_CALLBACK_${i}__`;
 
-  static remove = ({ id, callback }: { id: string; callback: any }) => {
-    const script = document.querySelector(`#${id}`);
-    if (script) {
-      (window as any)[callback] = () => {};
-      document.head.removeChild(script);
-    }
-  };
+    const script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = `${src}&callback=${callback}`;
+    script.onerror = (error) => {
+      reset();
+      reject(error);
+    };
 
-  static ajax = async (url: string) => {
-    return this.add(url);
-  };
-}
+    const reset = () => {
+      script.remove();
+      delete window[callback];
+    };
 
-export default FetchJsonp.ajax;
+    window[callback] = (res) => {
+      reset();
+      resolve(res);
+    };
+
+    document.head.appendChild(script);
+  });
+};
+
+export default fetcher;
